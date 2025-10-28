@@ -8,7 +8,10 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "npm run db:generate && npm run build:packages && turbo run build",
+    "build:packages": "npm run build --workspace=packages/database",
+    "db:generate": "npm run db:generate --workspace=packages/database",
+    "vercel-build": "npm run db:generate && npm run build:packages && turbo run build",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "clean": "turbo run clean && rm -rf node_modules"
