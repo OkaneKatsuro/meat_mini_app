@@ -25,6 +25,5 @@
     "db:migrate": {
       "cache": false
     }
-  },
-  "pipeline": {}
+  }
 }
