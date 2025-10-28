@@ -8,6 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Package, Users, TruckIcon, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
+interface InventoryItem {
+  meatType: string;
+  packageSize: string;
+  totalSupplied: number;
+  totalShipped: number;
+  currentStock: number;
+}
+
+interface DebtorInfo {
+  clientId: string;
+  clientName: string;
+  unpaidShipmentsCount: number;
+  totalUnpaidAmount: number;
+  oldestUnpaidDate: string;
+}
+
 export default function Home() {
   const { data: dashboard, isLoading } = useQuery({
     queryKey: ['dashboard'],
@@ -95,7 +111,7 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {inventory.map((item: any, index: number) => {
+                {inventory.map((item: InventoryItem, index: number) => {
                   const meatName = item.meatType === 'CHICKEN' ? 'Курица' : 'Говядина';
                   const sizeName = item.packageSize === 'SIZE_15' ? '15 кг' : '20 кг';
 
@@ -131,7 +147,7 @@ export default function Home() {
                 </p>
               ) : (
                 <div className="space-y-4">
-                  {debtors.map((debtor: any) => (
+                  {debtors.map((debtor: DebtorInfo) => (
                     <div
                       key={debtor.clientId}
                       className="flex justify-between items-center border-b pb-2"
