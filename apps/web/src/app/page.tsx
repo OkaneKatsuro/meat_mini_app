@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Package, Users, TruckIcon, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useTelegramWebApp } from '@/hooks/useTelegramWebApp';
 
 interface InventoryItem {
   meatType: string;
@@ -25,6 +26,8 @@ interface DebtorInfo {
 }
 
 export default function Home() {
+  const { user, platform } = useTelegramWebApp();
+
   const { data: dashboard, isLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: async () => {
@@ -49,7 +52,12 @@ export default function Home() {
     <main className="container mx-auto p-4 space-y-6 max-w-4xl">
       <div>
         <h1 className="text-3xl font-bold">Склад Мяса</h1>
-        <p className="text-muted-foreground">Управление и учет</p>
+        <p className="text-muted-foreground">
+          {user ? `Привет, ${user.first_name}!` : 'Управление и учет'}
+        </p>
+        {platform && (
+          <p className="text-xs text-muted-foreground">Platform: {platform}</p>
+        )}
       </div>
 
       {/* Stats Grid */}
