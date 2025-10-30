@@ -44,11 +44,13 @@ export class DashboardService {
     for (const meatType of meatTypes) {
       for (const packageSize of packageSizes) {
         const supplied = supplies.find(
-          (s) => s.meatType === meatType && s.packageSize === packageSize,
+          (s: { meatType: MeatType; packageSize: PackageSize; _sum: { quantity: number | null } }) =>
+            s.meatType === meatType && s.packageSize === packageSize,
         )?._sum.quantity || 0;
 
         const shipped = shipments.find(
-          (s) => s.meatType === meatType && s.packageSize === packageSize,
+          (s: { meatType: MeatType; packageSize: PackageSize; _sum: { quantity: number | null } }) =>
+            s.meatType === meatType && s.packageSize === packageSize,
         )?._sum.quantity || 0;
 
         inventory.push({

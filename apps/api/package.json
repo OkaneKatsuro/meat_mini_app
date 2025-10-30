@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "nest build",
-    "vercel-build": "npm run build",
+    "vercel-build": "npm run db:generate --workspace=@repo/database && npm run build --workspace=@repo/database && npm run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "dev": "nest start --watch",
     "start": "nest start",

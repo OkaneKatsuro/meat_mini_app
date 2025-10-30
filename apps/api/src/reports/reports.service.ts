@@ -75,7 +75,7 @@ export class ReportsService {
       },
     });
 
-    const total = supplies.reduce((sum, s) => sum + s.quantity, 0);
+    const total = supplies.reduce((sum: number, s) => sum + s.quantity, 0);
 
     const byTypeMap = new Map<string, { meatType: MeatType; packageSize: PackageSize; quantity: number }>();
 
@@ -144,12 +144,12 @@ export class ReportsService {
     });
 
     const totalRevenue = shipments.reduce(
-      (sum, s) => sum + (s.totalAmount ? Number(s.totalAmount) : 0),
+      (sum: number, s) => sum + (s.totalAmount ? Number(s.totalAmount) : 0),
       0,
     );
     const paidRevenue = shipments
       .filter((s) => s.isPaid)
-      .reduce((sum, s) => sum + (s.totalAmount ? Number(s.totalAmount) : 0), 0);
+      .reduce((sum: number, s) => sum + (s.totalAmount ? Number(s.totalAmount) : 0), 0);
     const unpaidRevenue = totalRevenue - paidRevenue;
 
     return {
