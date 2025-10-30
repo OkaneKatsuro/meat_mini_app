@@ -3,20 +3,21 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from '../src/app.module';
-import express from 'express';
+import * as express from 'express';
+import type { Request, Response } from 'express';
 
 const server = express();
 
-export default async (req: any, res: any) => {
+const createNestServer = async (expressInstance: express.Express) => {
   const app = await NestFactory.create(
     AppModule,
-    new ExpressAdapter(server),
+    new ExpressAdapter(expressInstance),
   );
 
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: true,
+    origin: process.env.FRONTEND_URL || true,
     credentials: true,
   });
 
@@ -37,6 +38,15 @@ export default async (req: any, res: any) => {
   SwaggerModule.setup('api/docs', app, document);
 
   await app.init();
+  return app;
+};
 
+let appPromise: Promise<any> | null = null;
+
+export default async (req: Request, res: Response) => {
+  if (!appPromise) {
+    appPromise = createNestServer(server);
+  }
+  await appPromise;
   return server(req, res);
 };

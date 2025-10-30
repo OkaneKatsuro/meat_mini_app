@@ -33,6 +33,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Compiled JS files (should only be in dist/)
+apps/*/src/**/*.js
+packages/*/src/**/*.js
+
 # Turbo
 .turbo
 
