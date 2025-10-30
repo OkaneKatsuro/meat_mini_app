@@ -37,6 +37,8 @@ next-env.d.ts
 apps/*/src/**/*.js
 packages/*/src/**/*.js
 
+# NOTE: .env files are tracked in this repo (no sensitive data)
+
 # Turbo
 .turbo
 

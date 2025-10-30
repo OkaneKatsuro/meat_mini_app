@@ -2,11 +2,10 @@ FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Copy root package files
+COPY package*.json ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/database/package.json ./packages/database/
 COPY packages/typescript-config/package.json ./packages/typescript-config/
@@ -14,17 +13,24 @@ COPY packages/typescript-config/package.json ./packages/typescript-config/
 # Install dependencies
 RUN npm ci
 
-# Build the application
+# Build the database package
+FROM base AS database-builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY packages/database ./packages/database
+WORKDIR /app/packages/database
+RUN npm run db:generate && npm run build
+
+# Build the API
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-# Generate Prisma Client
-RUN cd packages/database && npx prisma generate
-
-# Build API
-RUN cd apps/api && npm run build
+COPY --from=database-builder /app/packages/database ./packages/database
+COPY packages/typescript-config ./packages/typescript-config
+COPY apps/api ./apps/api
+COPY tsconfig.json ./
+WORKDIR /app/apps/api
+RUN npm run build
 
 # Production image
 FROM base AS runner
@@ -37,14 +43,11 @@ RUN adduser --system --uid 1001 nestjs
 
 # Copy necessary files
 COPY --from=builder --chown=nestjs:nodejs /app/apps/api/dist ./dist
-COPY --from=builder --chown=nestjs:nodejs /app/apps/api/package.json ./package.json
 COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nestjs:nodejs /app/packages/database ./packages/database
+COPY --from=database-builder --chown=nestjs:nodejs /app/packages/database ./packages/database
 
 USER nestjs
 
-EXPOSE 3001
+EXPOSE 3553
 
-ENV PORT 3001
-
-CMD ["node", "dist/main"]
+CMD ["node", "dist/main.js"]

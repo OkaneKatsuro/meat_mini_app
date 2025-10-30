@@ -11,7 +11,7 @@
 
 2. Создайте файл `.env`:
    ```bash
-   cp .env.example .env
+   cp .env .env
    ```
 
 3. Заполните `.env`:

@@ -1,8 +1,7 @@
-# Environment
-.env
-
 # Dependencies
 node_modules/
 
 # Logs
 *.log
+
+# NOTE: .env is tracked in this repo (no sensitive data)
