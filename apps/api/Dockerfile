@@ -25,7 +25,7 @@ RUN npm run db:generate && npm run build
 # Build the API
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=database-builder /app/node_modules ./node_modules
 COPY --from=database-builder /app/packages/database ./packages/database
 COPY packages/typescript-config ./packages/typescript-config
 COPY apps/api ./apps/api
