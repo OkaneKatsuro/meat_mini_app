@@ -16,6 +16,7 @@ RUN npm ci
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY packages/typescript-config ./packages/typescript-config
 COPY apps/web ./apps/web
 WORKDIR /app/apps/web
 
