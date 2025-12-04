@@ -61,4 +61,13 @@ jobs:
             echo "ℹ️ Синхронизирую схему базы данных..."
             ${DOCKER_COMPOSE} exec -T api sh -c "cd /app && npx prisma db push --schema=packages/database/schema.prisma --skip-generate --accept-data-loss"
 
+            echo ""
+            echo "📊 Статус контейнеров:"
+            ${DOCKER_COMPOSE} ps
+
+            echo ""
+            echo "📋 Логи бота (последние 20 строк):"
+            docker logs --tail 20 meat_bot || echo "Не удалось получить логи бота"
+
+            echo ""
             echo "✅ Деплой завершен"
