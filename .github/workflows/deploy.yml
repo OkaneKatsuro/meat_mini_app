@@ -58,7 +58,7 @@ jobs:
             ${DOCKER_COMPOSE} build --no-cache
             ${DOCKER_COMPOSE} up -d
 
-            echo "ℹ️ Прогоняю миграции..."
-            ${DOCKER_COMPOSE} exec -T api sh -c "cd /app && npx prisma migrate deploy || npx prisma migrate deploy --schema=packages/database/schema.prisma"
+            echo "ℹ️ Синхронизирую схему базы данных..."
+            ${DOCKER_COMPOSE} exec -T api sh -c "cd /app && npx prisma db push --schema=packages/database/schema.prisma --skip-generate --accept-data-loss"
 
             echo "✅ Деплой завершен"
