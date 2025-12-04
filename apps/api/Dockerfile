@@ -17,6 +17,7 @@ RUN npm ci
 FROM base AS database-builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY packages/typescript-config ./packages/typescript-config
 COPY packages/database ./packages/database
 WORKDIR /app/packages/database
 RUN npm run db:generate && npm run build
