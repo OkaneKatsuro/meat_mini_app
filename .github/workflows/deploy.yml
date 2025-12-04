@@ -40,6 +40,9 @@ jobs:
             fi
             echo "Compose командa: ${DOCKER_COMPOSE}"
 
+            echo "🧹 Очистка Docker перед сборкой..."
+            docker system prune -af --volumes || echo "Ошибка очистки (продолжаем)"
+
             echo "ℹ️ Клонирование/обновление репозитория..."
             if [ ! -d "$APP_DIR/.git" ]; then
               git clone "$REPO_URL" "$APP_DIR"

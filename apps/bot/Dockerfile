@@ -8,8 +8,8 @@ COPY apps/bot/package*.json ./
 # Install dependencies (use npm install since there's no lockfile)
 RUN npm install --omit=dev
 
-# Copy source code
-COPY apps/bot/src ./src
+# Copy source code (copy entire bot directory then use its structure)
+COPY apps/bot/src/ ./src/
 
 # Run as non-root user
 RUN addgroup --system --gid 1001 nodejs
