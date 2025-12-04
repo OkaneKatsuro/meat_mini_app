@@ -159,6 +159,7 @@ npx prisma studio
 
 ### Reports (Отчеты)
 - `GET /api/reports/period?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD` - Отчет за период
+- `GET /api/reports/period/csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD` - CSV-выгрузка отчета за период
 
 ## Telegram Mini App
 

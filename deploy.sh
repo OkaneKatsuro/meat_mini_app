@@ -12,15 +12,7 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}📥 Pulling latest changes...${NC}"
 git pull origin main
 
-# Stop and remove old containers
-echo -e "${YELLOW}🛑 Stopping old containers...${NC}"
-docker-compose down
-
-# Remove old images (optional, comment out if you want to keep cache)
-# echo -e "${YELLOW}🗑️  Removing old images...${NC}"
-# docker-compose rm -f
-
-# Build new images
+# Build new images (без остановки чужих контейнеров)
 echo -e "${YELLOW}🔨 Building new images...${NC}"
 docker-compose build --no-cache
 

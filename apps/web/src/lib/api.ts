@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -54,6 +54,44 @@ export interface Shipment {
   updatedAt: string;
 }
 
+export interface PeriodReport {
+  period: {
+    startDate: string;
+    endDate: string;
+  };
+  supplies: {
+    total: number;
+    byType: Array<{
+      meatType: MeatType;
+      packageSize: PackageSize;
+      quantity: number;
+    }>;
+  };
+  shipments: {
+    total: number;
+    paid: number;
+    unpaid: number;
+    byType: Array<{
+      meatType: MeatType;
+      packageSize: PackageSize;
+      quantity: number;
+      paidQuantity: number;
+      unpaidQuantity: number;
+    }>;
+    revenue: {
+      total: number;
+      paid: number;
+      unpaid: number;
+    };
+  };
+  topClients: Array<{
+    clientId: string;
+    clientName: string;
+    totalShipments: number;
+    totalAmount: number;
+  }>;
+}
+
 export const suppliesApi = {
   getAll: () => api.get<Supply[]>('/supplies'),
   getOne: (id: string) => api.get<Supply>(`/supplies/${id}`),
@@ -96,5 +134,10 @@ export const dashboardApi = {
 
 export const reportsApi = {
   getPeriodReport: (startDate: string, endDate: string) =>
-    api.get('/reports/period', { params: { startDate, endDate } }),
+    api.get<PeriodReport>('/reports/period', { params: { startDate, endDate } }),
+  downloadPeriodReportCsv: (startDate: string, endDate: string) =>
+    api.get('/reports/period/csv', {
+      params: { startDate, endDate },
+      responseType: 'blob',
+    }),
 };

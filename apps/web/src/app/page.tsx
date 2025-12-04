@@ -26,7 +26,7 @@ interface DebtorInfo {
 }
 
 export default function Home() {
-  const { user, platform } = useTelegramWebApp();
+  const { user } = useTelegramWebApp();
 
   const { data: dashboard, isLoading } = useQuery({
     queryKey: ['dashboard'],
@@ -55,9 +55,6 @@ export default function Home() {
         <p className="text-muted-foreground">
           {user ? `Привет, ${user.first_name}!` : 'Управление и учет'}
         </p>
-        {platform && (
-          <p className="text-xs text-muted-foreground">Platform: {platform}</p>
-        )}
       </div>
 
       {/* Stats Grid */}

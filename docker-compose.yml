@@ -1,25 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: meat_postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - meat_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # NestJS API
   api:
     build:
@@ -32,10 +13,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3553
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
-    depends_on:
-      postgres:
-        condition: service_healthy
+      DATABASE_URL: postgresql://gen_user:std!Y8XUk-RF%3BV@185.211.170.182:5432/meat
+      FRONTEND_URL: https://meat-bot.fluttrium.com
     networks:
       - meat_network
 
@@ -68,25 +47,8 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      BOT_TOKEN: ${BOT_TOKEN}
+      BOT_TOKEN: 8475379548:AAHczG4WPWPCIW86dJpuF8bpAiUivoAsfD0
       MINI_APP_URL: https://meat-bot.fluttrium.com
-    depends_on:
-      - web
-      - api
-    networks:
-      - meat_network
-
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: meat_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - web
       - api
@@ -96,6 +58,3 @@ services:
 networks:
   meat_network:
     driver: bridge
-
-volumes:
-  postgres_data:

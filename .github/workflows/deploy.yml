@@ -1,0 +1,64 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: "92.118.114.147"
+          username: "root"
+          password: "tXi1L-6SdRsVNC"
+          port: 22
+          script_stop: true
+          script: |
+            set -euo pipefail
+            set +o histexpand
+            APP_DIR="/opt/meet_tg"
+            REPO_URL="https://github.com/OkaneKatsuro/meat_mini_app.git"
+
+            echo "ℹ️ Проверяю docker..."
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "Docker не найден. Установите docker перед деплоем." >&2
+              exit 1
+            fi
+            echo "Docker: $(docker --version)"
+
+            if docker compose version >/dev/null 2>&1; then
+              DOCKER_COMPOSE="docker compose"
+            elif command -v docker-compose >/dev/null 2>&1; then
+              DOCKER_COMPOSE="docker-compose"
+            else
+              echo "docker compose / docker-compose не найден. Установите docker-compose." >&2
+              exit 1
+            fi
+            echo "Compose командa: ${DOCKER_COMPOSE}"
+
+            echo "ℹ️ Клонирование/обновление репозитория..."
+            if [ ! -d "$APP_DIR/.git" ]; then
+              git clone "$REPO_URL" "$APP_DIR"
+            fi
+            cd "$APP_DIR"
+            git fetch origin
+            git reset --hard origin/main
+
+            if [ ! -f nginx/nginx.conf ]; then
+              echo "Файл nginx/nginx.conf не найден. Добавьте конфиг перед деплоем." >&2
+              exit 1
+            fi
+
+            echo "ℹ️ Собираю и поднимаю контейнеры (без остановки чужих)..."
+            ${DOCKER_COMPOSE} pull --ignore-pull-failures
+            ${DOCKER_COMPOSE} build --no-cache
+            ${DOCKER_COMPOSE} up -d
+
+            echo "ℹ️ Прогоняю миграции..."
+            ${DOCKER_COMPOSE} exec -T api sh -c "cd /app && npx prisma migrate deploy || npx prisma migrate deploy --schema=packages/database/schema.prisma"
+
+            echo "✅ Деплой завершен"

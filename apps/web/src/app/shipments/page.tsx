@@ -18,9 +18,9 @@ export default function ShipmentsPage() {
     date: new Date().toISOString().split('T')[0],
     meatType: MeatType.CHICKEN,
     packageSize: PackageSize.SIZE_15,
-    quantity: 0,
+    quantity: '' as string | number,
     isPaid: false,
-    totalAmount: 0,
+    totalAmount: '' as string | number,
     notes: '',
   });
 
@@ -41,7 +41,11 @@ export default function ShipmentsPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: typeof formData) => shipmentsApi.create(data),
+    mutationFn: (data: typeof formData) => shipmentsApi.create({ 
+      ...data, 
+      quantity: Number(data.quantity),
+      totalAmount: data.totalAmount === '' ? 0 : Number(data.totalAmount)
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shipments'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
@@ -50,9 +54,9 @@ export default function ShipmentsPage() {
         date: new Date().toISOString().split('T')[0],
         meatType: MeatType.CHICKEN,
         packageSize: PackageSize.SIZE_15,
-        quantity: 0,
+        quantity: '',
         isPaid: false,
-        totalAmount: 0,
+        totalAmount: '',
         notes: '',
       });
       setIsAdding(false);
@@ -77,7 +81,8 @@ export default function ShipmentsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.clientId || formData.quantity <= 0) return;
+    const quantity = Number(formData.quantity);
+    if (!formData.clientId || !quantity || quantity <= 0) return;
     createMutation.mutate(formData);
   };
 
@@ -177,7 +182,10 @@ export default function ShipmentsPage() {
                   min="1"
                   value={formData.quantity}
                   onChange={(e) =>
-                    setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })
+                    setFormData({ 
+                      ...formData, 
+                      quantity: e.target.value === '' ? '' : Number(e.target.value)
+                    })
                   }
                   required
                 />
@@ -191,7 +199,10 @@ export default function ShipmentsPage() {
                   step="0.01"
                   value={formData.totalAmount}
                   onChange={(e) =>
-                    setFormData({ ...formData, totalAmount: parseFloat(e.target.value) || 0 })
+                    setFormData({ 
+                      ...formData, 
+                      totalAmount: e.target.value === '' ? '' : (e.target.value === '.' ? '0.' : Number(e.target.value))
+                    })
                   }
                 />
               </div>

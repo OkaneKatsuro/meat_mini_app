@@ -17,7 +17,7 @@ export default function SuppliesPage() {
     date: new Date().toISOString().split('T')[0],
     meatType: MeatType.CHICKEN,
     packageSize: PackageSize.SIZE_15,
-    quantity: 0,
+    quantity: '' as string | number,
   });
 
   const { data: supplies, isLoading } = useQuery({
@@ -29,7 +29,7 @@ export default function SuppliesPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: typeof formData) => suppliesApi.create(data),
+    mutationFn: (data: typeof formData) => suppliesApi.create({ ...data, quantity: Number(data.quantity) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['supplies'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
@@ -37,7 +37,7 @@ export default function SuppliesPage() {
         date: new Date().toISOString().split('T')[0],
         meatType: MeatType.CHICKEN,
         packageSize: PackageSize.SIZE_15,
-        quantity: 0,
+        quantity: '',
       });
       setIsAdding(false);
     },
@@ -53,8 +53,9 @@ export default function SuppliesPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.quantity <= 0) return;
-    createMutation.mutate(formData);
+    const quantity = Number(formData.quantity);
+    if (quantity <= 0) return;
+    createMutation.mutate({ ...formData, quantity });
   };
 
   const getMeatName = (type: MeatType) => (type === MeatType.CHICKEN ? 'Курица' : 'Говядина');
@@ -136,7 +137,7 @@ export default function SuppliesPage() {
                   min="1"
                   value={formData.quantity}
                   onChange={(e) =>
-                    setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })
+                    setFormData({ ...formData, quantity: e.target.value === '' ? '' : Number(e.target.value) })
                   }
                   required
                 />
