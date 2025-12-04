@@ -5,8 +5,8 @@ WORKDIR /app
 # Copy package files
 COPY apps/bot/package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (use npm install since there's no lockfile)
+RUN npm install --omit=dev
 
 # Copy source code
 COPY apps/bot/src ./src
